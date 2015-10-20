@@ -191,10 +191,6 @@ class kafka::server(
     # you want installed.
     require ::kafka
 
-    package { 'kafka-server':
-        ensure => $::kafka::version
-    }
-
     # Get this broker's id and port out of the $kafka::hosts configuration hash
     $broker_id   = $brokers[$::fqdn]['id']
 
