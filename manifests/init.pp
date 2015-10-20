@@ -15,7 +15,7 @@ class kafka(
     $version = $kafka::defaults::version
 )
 {
-    package { 'kafka-common':
+    package { 'kafka':
         ensure => $version,
     }
 }
