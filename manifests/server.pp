@@ -236,7 +236,13 @@ class kafka::server(
         content => template($default_template),
         require => Package['kafka-server'],
     }
-    file { '/etc/kafka/server.properties':
+
+    file { '/etc/kafka':
+        ensure => symlink,
+        target => '/opt/kafka'
+    }
+
+    file { '/etc/kafka/config/server.properties':
         content => template($server_properties_template),
         require => Package['kafka-server'],
     }
@@ -254,7 +260,7 @@ class kafka::server(
 
     # log4j configuration for Kafka daemon
     # process logs (this uses $kafka_log_dir).
-    file { '/etc/kafka/log4j.properties':
+    file { '/etc/kafka/config/log4j.properties':
         content => template($log4j_properties_template),
         require => Package['kafka-server'],
     }
@@ -272,8 +278,8 @@ class kafka::server(
         hasrestart => true,
         hasstatus  => true,
         require    => [
-            File['/etc/kafka/server.properties'],
-            File['/etc/kafka/log4j.properties'],
+            File['/etc/kafka/config/server.properties'],
+            File['/etc/kafka/config/log4j.properties'],
             File['/etc/default/kafka'],
             File[$log_dirs],
             # This will be an empty array if we
