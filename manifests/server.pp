@@ -234,7 +234,7 @@ class kafka::server(
     # Render out Kafka Broker config files.
     file { '/etc/default/kafka':
         content => template($default_template),
-        require => Package['kafka-server'],
+        require => Package['kafka'],
     }
 
     file { '/etc/kafka':
@@ -244,7 +244,7 @@ class kafka::server(
 
     file { '/etc/kafka/config/server.properties':
         content => template($server_properties_template),
-        require => Package['kafka-server'],
+        require => Package['kafka'],
     }
 
     # This is the message data directory,
@@ -255,14 +255,14 @@ class kafka::server(
         owner   => 'kafka',
         group   => 'kafka',
         mode    => '0755',
-        require => Package['kafka-server'],
+        require => Package['kafka'],
     }
 
     # log4j configuration for Kafka daemon
     # process logs (this uses $kafka_log_dir).
     file { '/etc/kafka/config/log4j.properties':
         content => template($log4j_properties_template),
-        require => Package['kafka-server'],
+        require => Package['kafka'],
     }
 
     # Start the Kafka server.
