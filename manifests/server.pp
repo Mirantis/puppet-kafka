@@ -11,6 +11,8 @@
 #                                         should be of the form:
 #                                           { 'hostA' => { 'id' => 1, 'port' => 12345 }, 'hostB' => { 'id' => 2 }, ... }
 #                                         'port' is optional, and will default to 9092.
+# $base_log_dirs                        - An array of base directories that will be used for logs
+#                                         Defaults to $log_dirs if it's not set
 #
 # $log_dirs                             - Array of directories in which the broker will store its
 #                                         received log event data.
@@ -131,6 +133,7 @@ class kafka::server(
 
     $brokers                             = $kafka::defaults::brokers,
     $log_dirs                            = $kafka::defaults::log_dirs,
+    $base_log_dirs                       = $kafka::defaults::base_log_dirs,
 
     $zookeeper_hosts                     = $kafka::defaults::zookeeper_hosts,
     $zookeeper_connection_timeout_ms     = $kafka::defaults::zookeeper_connection_timeout_ms,
@@ -247,15 +250,35 @@ class kafka::server(
         require => Package['kafka'],
     }
 
-    # This is the message data directory,
-    # not to be confused with the $kafka_log_file,
-    # which contains daemon process logs.
-    file { $log_dirs:
+    # Create the base_log_dirs first, if they are needed
+    if $base_log_dirs != nil {
+      file { $base_log_dirs:
+        ensure => 'directory',
+        owner  => 'kafka',
+        group  => 'kafka',
+        mode   => 0755,
+        require => Package['kafka'],
+      }
+
+      file { $log_dirs:
         ensure  => 'directory',
         owner   => 'kafka',
         group   => 'kafka',
         mode    => '0755',
         require => Package['kafka'],
+      }
+    } else {
+
+      # This is the message data directory,
+      # not to be confused with the $kafka_log_file,
+      # which contains daemon process logs.
+      file { $log_dirs:
+          ensure  => 'directory',
+          owner   => 'kafka',
+          group   => 'kafka',
+          mode    => '0755',
+          require => Package['kafka'],
+      }
     }
 
     # log4j configuration for Kafka daemon
