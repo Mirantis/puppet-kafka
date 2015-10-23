@@ -195,13 +195,13 @@ class kafka::server(
     require ::kafka
 
     # Get this broker's id and port out of the $kafka::hosts configuration hash
-    $broker_id   = $brokers[$::fqdn]['id']
+    $broker_id   = $brokers[$::hostname]['id']
 
     # Using a conditional assignment selector with a
     # Hash value results in a puppet syntax error.
     # Using an if/else instead.
-    if ($brokers[$::fqdn]['port']) {
-        $broker_port = $brokers[$::fqdn]['port']
+    if ($brokers[$::hostname]['port']) {
+        $broker_port = $brokers[$::hostname]['port']
     }
     else {
         $broker_port = $kafka::defaults::default_broker_port
